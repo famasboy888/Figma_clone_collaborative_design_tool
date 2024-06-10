@@ -74,7 +74,7 @@ export type ModifyShape = {
   property: string;
   value: any;
   activeObjectRef: React.MutableRefObject<fabric.Object | null>;
-  syncShapeInStorage: (shape: fabric.Object) => void;
+  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
 };
 
 export type ElementDirection = {
@@ -87,7 +87,7 @@ export type ImageUpload = {
   file: File;
   canvas: React.MutableRefObject<fabric.Canvas>;
   shapeRef: React.MutableRefObject<fabric.Object | null>;
-  syncShapeInStorage: (shape: fabric.Object) => void;
+  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
 };
 
 export type RightSidebarProps = {
@@ -129,7 +129,7 @@ export type CanvasMouseDown = {
   canvas: fabric.Canvas;
   selectedShapeRef: any;
   isDrawing: React.MutableRefObject<boolean>;
-  shapeRef: React.MutableRefObject<fabric.Object | null>;
+  shapeRef: React.MutableRefObject<any>;
 };
 
 export type CanvasMouseMove = {
@@ -137,23 +137,24 @@ export type CanvasMouseMove = {
   canvas: fabric.Canvas;
   isDrawing: React.MutableRefObject<boolean>;
   selectedShapeRef: any;
-  shapeRef: any;
-  syncShapeInStorage: (shape: fabric.Object) => void;
+  shapeRef: React.MutableRefObject<any>;
+  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
 };
 
 export type CanvasMouseUp = {
   canvas: fabric.Canvas;
   isDrawing: React.MutableRefObject<boolean>;
   shapeRef: any;
-  activeObjectRef: React.MutableRefObject<fabric.Object | null>;
+  activeObjectRef: React.MutableRefObject<fabric.Object | null | any>;
   selectedShapeRef: any;
-  syncShapeInStorage: (shape: fabric.Object) => void;
+  syncShapeInStorage: (shape: fabric.Object, shapeIndex: number) => void;
   setActiveElement: any;
 };
 
 export type CanvasObjectModified = {
   options: fabric.IEvent;
-  syncShapeInStorage: (shape: fabric.Object) => void;
+  canvas: fabric.Canvas;
+  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
 };
 
 export type CanvasPathCreated = {

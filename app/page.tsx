@@ -42,6 +42,8 @@ export default function Page() {
    * data in a key-value store and automatically sync it with other users
    * i.e., subscribes to updates to that selected data
    *
+   * This is sorted according to z-index
+   *
    * useStorage: https://liveblocks.io/docs/api-reference/liveblocks-react#useStorage
    *
    * Over here, we are storing the canvas objects in the key-value store.
@@ -195,30 +197,44 @@ export default function Page() {
    * whenever user performs any action on the canvas such as drawing, moving
    * editing, deleting etc.
    */
-  const syncShapeInStorage = useMutation(({ storage }, object) => {
-    console.log("before save", object);
-    // if the passed object is null, return
-    if (!object) return;
+  const syncShapeInStorage = useMutation(
+    ({ storage }, object, shapeIndex?: number) => {
+      // if the passed object is null, return
+      if (!object) return;
 
-    // get the object id
-    const { objectId } = object;
+      // get the object id
+      const { objectId } = object;
 
-    console.log("Saving and sync to live blocks", object);
-    /**
-     * Turn Fabric object (kclass) into JSON format so that we can store it in the
-     * key-value store.
-     */
-    const shapeData = object.toJSON();
-    shapeData.objectId = objectId;
+      /**
+       * Turn Fabric object (kclass) into JSON format so that we can store it in the
+       * key-value store.
+       */
+      const shapeData = object.toJSON();
+      shapeData.objectId = objectId;
 
-    const canvasObjects = storage.get("canvasObjects");
-    /**
-     * set is a method provided by Liveblocks that allows you to set a value
-     *
-     * set: https://liveblocks.io/docs/api-reference/liveblocks-client#LiveMap.set
-     */
-    canvasObjects.set(objectId, shapeData);
-  }, []);
+      const canvasObjects = storage.get("canvasObjects");
+
+      if (shapeIndex !== undefined && shapeIndex > -1) {
+        shapeData.zIndex = shapeIndex;
+      }
+
+      // if z-index already exists, then extract it and set it to the shapeData
+      const extractedZindex = canvasObjects.get(objectId)?.zIndex;
+
+      if (extractedZindex) {
+        shapeData.zIndex = extractedZindex;
+      }
+
+      /**
+       * set is a method provided by Liveblocks that allows you to set a value
+       *
+       * set: https://liveblocks.io/docs/api-reference/liveblocks-client#LiveMap.set
+       */
+
+      canvasObjects.set(objectId, shapeData);
+    },
+    []
+  );
 
   /**
    * Set the active element in the navbar and perform the action based
@@ -316,7 +332,6 @@ export default function Page() {
         shapeRef,
         syncShapeInStorage,
       });
-      console.log("mouse move");
     });
 
     /**
@@ -350,6 +365,7 @@ export default function Page() {
     canvas.on("object:modified", (options) => {
       handleCanvasObjectModified({
         options,
+        canvas,
         syncShapeInStorage,
       });
     });

@@ -1,3 +1,4 @@
+// File: e:\Documents\WebDev\figma-clone\lib\canvas.ts
 import { fabric } from "fabric";
 import { v4 as uuid4 } from "uuid";
 
@@ -10,6 +11,7 @@ import {
   CanvasPathCreated,
   CanvasSelectionCreated,
   RenderCanvas,
+  Layer,
 } from "@/types/type";
 import { defaultNavElement } from "@/constants";
 import { createSpecificShape } from "./shapes";
@@ -166,8 +168,7 @@ export const handleCanvaseMouseMove = ({
 
   // sync shape in storage
   if (shapeRef.current?.objectId) {
-    const shapeIndex = getShapeIndexById(shapeRef, canvas);
-    syncShapeInStorage(shapeRef.current, shapeIndex);
+    syncShapeInStorage(shapeRef.current);
   }
 };
 
@@ -184,9 +185,8 @@ export const handleCanvasMouseUp = ({
   isDrawing.current = false;
   if (selectedShapeRef.current === "freeform") return;
 
-  const shapeIndex = getShapeIndexById(shapeRef, canvas);
-
-  syncShapeInStorage(shapeRef.current, shapeIndex);
+  // sync shape in storage as drawing is stopped
+  syncShapeInStorage(shapeRef.current);
 
   // set everything to null
   shapeRef.current = null;
@@ -204,7 +204,6 @@ export const handleCanvasMouseUp = ({
 // update shape in storage when object is modified
 export const handleCanvasObjectModified = ({
   options,
-  canvas,
   syncShapeInStorage,
 }: CanvasObjectModified) => {
   const target = options.target;
@@ -213,8 +212,7 @@ export const handleCanvasObjectModified = ({
   if (target?.type == "activeSelection") {
     // fix this
   } else {
-    const shapeIndex = target.canvas?.getObjects().indexOf(target);
-    syncShapeInStorage(target, shapeIndex);
+    syncShapeInStorage(target);
   }
 };
 
@@ -232,7 +230,6 @@ export const handlePathCreated = ({
     objectId: uuid4(),
   });
 
-  console.log("Path created");
   // sync shape in storage
   syncShapeInStorage(path);
 };
@@ -349,17 +346,7 @@ export const renderCanvas = ({
   fabricRef.current?.clear();
 
   // render all objects on canvas
-
-  //Sort first according to z-index
-  const sortedCanvasObjects = new Map(
-    [...canvasObjects.entries()].sort((b, a) => {
-      return a[1].zIndex - b[1].zIndex;
-    })
-  );
-
-  console.log("sortedCanvasObjects", sortedCanvasObjects);
-
-  Array.from(sortedCanvasObjects, ([objectId, objectData]) => {
+  Array.from(canvasObjects, ([objectId, objectData]) => {
     /**
      * enlivenObjects() is used to render objects on canvas.
      * It takes two arguments:
@@ -377,8 +364,6 @@ export const renderCanvas = ({
           if (activeObjectRef.current?.objectId === objectId) {
             fabricRef.current?.setActiveObject(enlivenedObj);
           }
-
-          console.log("enlivenedObj", enlivenedObj);
 
           // add object to canvas
           fabricRef.current?.add(enlivenedObj);
@@ -436,15 +421,4 @@ export const handleCanvasZoom = ({
 
   options.e.preventDefault();
   options.e.stopPropagation();
-};
-
-//Modifications kyle yap
-
-const getShapeIndexById = (shapeRef: any, canvas: any) => {
-  console.log("getObjects", canvas.getObjects());
-  const shapeRefById = canvas.getObjects().find((obj: { objectId: any; }) => {
-    return obj.objectId === shapeRef.current?.objectId;
-  });
-
-  return canvas.getObjects().indexOf(shapeRefById);
 };
