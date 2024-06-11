@@ -352,7 +352,7 @@ export const renderCanvas = ({
 
   //Sort first according to z-index
   const sortedCanvasObjects = new Map(
-    [...canvasObjects.entries()].sort((b, a) => {
+    [...canvasObjects.entries()].toSorted((a, b) => {
       return a[1].zIndex - b[1].zIndex;
     })
   );
@@ -442,7 +442,7 @@ export const handleCanvasZoom = ({
 
 const getShapeIndexById = (shapeRef: any, canvas: any) => {
   console.log("getObjects", canvas.getObjects());
-  const shapeRefById = canvas.getObjects().find((obj: { objectId: any; }) => {
+  const shapeRefById = canvas.getObjects().find((obj: { objectId: any }) => {
     return obj.objectId === shapeRef.current?.objectId;
   });
 

@@ -48,6 +48,7 @@ export default function Page() {
    *
    * Over here, we are storing the canvas objects in the key-value store.
    */
+
   const canvasObjects = useStorage((root) => root.canvasObjects);
 
   /**
@@ -221,7 +222,7 @@ export default function Page() {
       // if z-index already exists, then extract it and set it to the shapeData
       const extractedZindex = canvasObjects.get(objectId)?.zIndex;
 
-      if (extractedZindex) {
+      if (extractedZindex !== null && extractedZindex !== undefined) {
         shapeData.zIndex = extractedZindex;
       }
 
@@ -516,7 +517,11 @@ export default function Page() {
       />
 
       <section className="flex h-full flex-row">
-        <LeftSidebar allShapes={Array.from(canvasObjects)} />
+        <LeftSidebar
+          allShapes={Array.from(canvasObjects).sort((b, a) => {
+            return a[1].zIndex - b[1].zIndex;
+          })}
+        />
 
         <Live canvasRef={canvasRef} undo={undo} redo={redo} />
 
