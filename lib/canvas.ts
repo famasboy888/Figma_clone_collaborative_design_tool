@@ -442,7 +442,7 @@ export const handleCanvasZoom = ({
 
 const getShapeIndexById = (shapeRef: any, canvas: any) => {
   console.log("getObjects", canvas.getObjects());
-  const shapeRefById = canvas.getObjects().find((obj: { objectId: any }) => {
+  const shapeRefById = canvas.getObjects().find((obj: any) => {
     return obj.objectId === shapeRef.current?.objectId;
   });
 

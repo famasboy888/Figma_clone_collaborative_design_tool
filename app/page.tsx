@@ -34,6 +34,8 @@ export default function Page() {
    * useUndo: https://liveblocks.io/docs/api-reference/liveblocks-react#useUndo
    * useRedo: https://liveblocks.io/docs/api-reference/liveblocks-react#useRedo
    */
+  let canvas: fabric.Canvas;
+
   const undo = useUndo();
   const redo = useRedo();
 
@@ -140,6 +142,19 @@ export default function Page() {
     fill: "#aabbcc",
     stroke: "#aabbcc",
   });
+
+  // Added by kyle yap
+  const handleLayerClick = (shape: any) => {
+    const shapeRefById: any = canvas.getObjects().find((obj: any) => {
+      return obj.objectId === shape[1]?.objectId;
+    });
+
+    if (shapeRefById) {
+      activeObjectRef.current = shapeRefById;
+      fabricRef.current?.setActiveObject(shapeRefById);
+      fabricRef.current?.renderAll();
+    }
+  };
 
   /**
    * deleteShapeFromStorage is a mutation that deletes a shape from the
@@ -295,7 +310,7 @@ export default function Page() {
 
   useEffect(() => {
     // initialize the fabric canvas
-    const canvas = initializeFabric({
+    canvas = initializeFabric({
       canvasRef,
       fabricRef,
     });
@@ -521,6 +536,7 @@ export default function Page() {
           allShapes={Array.from(canvasObjects).sort((b, a) => {
             return a[1].zIndex - b[1].zIndex;
           })}
+          handleLayerClick={handleLayerClick}
         />
 
         <Live canvasRef={canvasRef} undo={undo} redo={redo} />

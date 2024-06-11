@@ -5,7 +5,13 @@ import Image from "next/image";
 
 import { getShapeInfo } from "@/lib/utils";
 
-const LeftSidebar = ({ allShapes }: { allShapes: Array<any> }) => {
+const LeftSidebar = ({
+  allShapes,
+  handleLayerClick,
+}: {
+  allShapes: Array<any>;
+  handleLayerClick: Function;
+}) => {
   // memoize the result of this function so that it doesn't change on every render but only when there are new shapes
   const memoizedShapes = useMemo(
     () => (
@@ -21,6 +27,7 @@ const LeftSidebar = ({ allShapes }: { allShapes: Array<any> }) => {
               <div
                 key={shape[1]?.objectId}
                 className="group my-1 flex items-center gap-2 px-5 py-2.5 hover:cursor-pointer hover:bg-primary-green hover:text-primary-black"
+                onClick={() => handleLayerClick(shape)}
               >
                 <Image
                   src={info?.icon}
