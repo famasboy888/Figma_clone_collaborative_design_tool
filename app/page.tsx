@@ -34,8 +34,6 @@ export default function Page() {
    * useUndo: https://liveblocks.io/docs/api-reference/liveblocks-react#useUndo
    * useRedo: https://liveblocks.io/docs/api-reference/liveblocks-react#useRedo
    */
-  let canvas: fabric.Canvas;
-
   const undo = useUndo();
   const redo = useRedo();
 
@@ -310,7 +308,7 @@ export default function Page() {
 
   useEffect(() => {
     // initialize the fabric canvas
-    canvas = initializeFabric({
+    const canvas = initializeFabric({
       canvasRef,
       fabricRef,
     });
