@@ -143,9 +143,11 @@ export default function Page() {
 
   // Added by kyle yap
   const handleLayerClick = (shape: any) => {
-    const shapeRefById: any = canvas.getObjects().find((obj: any) => {
-      return obj.objectId === shape[1]?.objectId;
-    });
+    const shapeRefById: any = fabricRef.current
+      ?.getObjects()
+      .find((obj: any) => {
+        return obj.objectId === shape[1]?.objectId;
+      });
 
     if (shapeRefById) {
       activeObjectRef.current = shapeRefById;
