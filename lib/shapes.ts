@@ -110,7 +110,9 @@ export const handleImageUpload = ({
 
       shapeRef.current = img;
 
-      syncShapeInStorage(img);
+      const shapeIndex = canvas.current.getObjects().indexOf(img);
+
+      syncShapeInStorage(img, shapeIndex);
       canvas.current.requestRenderAll();
     });
   };
@@ -155,9 +157,13 @@ export const modifyShape = ({
   }
 
   // set selectedElement to activeObjectRef
-  activeObjectRef.current = selectedElement;
+  // activeObjectRef.current = selectedElement;
 
-  syncShapeInStorage(selectedElement);
+  // const shapeIndex = canvas.getObjects().indexOf(selectedElement);
+
+  const shapeIndex = 0;
+
+  syncShapeInStorage(selectedElement, shapeIndex);
 };
 
 export const bringElement = ({

@@ -14,9 +14,9 @@ const LeftSidebar = ({ allShapes }: { allShapes: Array<any> }) => {
           Layers
         </h3>
         <div className="flex flex-col">
-          {allShapes?.map((shape: any) => {
+          {allShapes.map((shape: any) => {
             const info = getShapeInfo(shape[1]?.type);
-
+            const shapeIndex = shape[1]?.zIndex;
             return (
               <div
                 key={shape[1]?.objectId}
@@ -30,7 +30,7 @@ const LeftSidebar = ({ allShapes }: { allShapes: Array<any> }) => {
                   className="group-hover:invert"
                 />
                 <h3 className="text-sm font-semibold capitalize">
-                  {info.name}
+                  {info.name} {shapeIndex > -1 && `${shapeIndex}`}
                 </h3>
               </div>
             );
