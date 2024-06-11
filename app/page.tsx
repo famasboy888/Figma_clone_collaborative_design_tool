@@ -141,6 +141,21 @@ export default function Page() {
     stroke: "#aabbcc",
   });
 
+  // Added by kyle yap
+  const handleLayerClick = (shape: any) => {
+    const shapeRefById: any = fabricRef.current
+      ?.getObjects()
+      .find((obj: any) => {
+        return obj.objectId === shape[1]?.objectId;
+      });
+
+    if (shapeRefById) {
+      activeObjectRef.current = shapeRefById;
+      fabricRef.current?.setActiveObject(shapeRefById);
+      fabricRef.current?.renderAll();
+    }
+  };
+
   /**
    * deleteShapeFromStorage is a mutation that deletes a shape from the
    * key-value store of liveblocks.
@@ -521,6 +536,7 @@ export default function Page() {
           allShapes={Array.from(canvasObjects).sort((b, a) => {
             return a[1].zIndex - b[1].zIndex;
           })}
+          handleLayerClick={handleLayerClick}
         />
 
         <Live canvasRef={canvasRef} undo={undo} redo={redo} />
