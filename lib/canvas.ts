@@ -44,6 +44,7 @@ export const handleCanvasMouseDown = ({
   selectedShapeRef,
   isDrawing,
   shapeRef,
+  setSelectedShapeId,
 }: CanvasMouseDown) => {
   // get pointer coordinates
   const pointer = canvas.getPointer(options.e);
@@ -68,6 +69,11 @@ export const handleCanvasMouseDown = ({
   }
 
   canvas.isDrawingMode = false;
+
+  //Added by kyle yap
+  if (target?.objectId) {
+    setSelectedShapeId(target?.objectId);
+  }
 
   // if target is the selected shape or active selection, set isDrawing to false
   if (
@@ -166,8 +172,8 @@ export const handleCanvaseMouseMove = ({
 
   // sync shape in storage
   if (shapeRef.current?.objectId) {
-    const shapeIndex = getShapeIndexById(shapeRef, canvas);
-    syncShapeInStorage(shapeRef.current, shapeIndex);
+    // const shapeIndex = getShapeIndexById(shapeRef, canvas);
+    syncShapeInStorage(shapeRef.current);
   }
 };
 
@@ -184,9 +190,8 @@ export const handleCanvasMouseUp = ({
   isDrawing.current = false;
   if (selectedShapeRef.current === "freeform") return;
 
-  const shapeIndex = getShapeIndexById(shapeRef, canvas);
 
-  syncShapeInStorage(shapeRef.current, shapeIndex);
+  syncShapeInStorage(shapeRef.current, true);
 
   // set everything to null
   shapeRef.current = null;
@@ -213,8 +218,8 @@ export const handleCanvasObjectModified = ({
   if (target?.type == "activeSelection") {
     // fix this
   } else {
-    const shapeIndex = target.canvas?.getObjects().indexOf(target);
-    syncShapeInStorage(target, shapeIndex);
+    // const shapeIndex = target.canvas?.getObjects().indexOf(target);
+    syncShapeInStorage(target);
   }
 };
 

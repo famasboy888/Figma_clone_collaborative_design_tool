@@ -27,6 +27,7 @@ import { handleDelete, handleKeyDown } from "@/lib/key-events";
 import { handleImageUpload } from "@/lib/shapes";
 
 export default function Page() {
+  const [selectedShapeId, setSelectedShapeId] = useState<string | null>(null);
   /**
    * useUndo and useRedo are hooks provided by Liveblocks that allow you to
    * undo and redo mutations.
@@ -141,21 +142,6 @@ export default function Page() {
     stroke: "#aabbcc",
   });
 
-  // Added by kyle yap
-  const handleLayerClick = (shape: any) => {
-    const shapeRefById: any = fabricRef.current
-      ?.getObjects()
-      .find((obj: any) => {
-        return obj.objectId === shape[1]?.objectId;
-      });
-
-    if (shapeRefById) {
-      activeObjectRef.current = shapeRefById;
-      fabricRef.current?.setActiveObject(shapeRefById);
-      fabricRef.current?.renderAll();
-    }
-  };
-
   /**
    * deleteShapeFromStorage is a mutation that deletes a shape from the
    * key-value store of liveblocks.
@@ -214,7 +200,7 @@ export default function Page() {
    * editing, deleting etc.
    */
   const syncShapeInStorage = useMutation(
-    ({ storage }, object, shapeIndex?: number) => {
+    ({ storage }, object, initShape?: boolean) => {
       // if the passed object is null, return
       if (!object) return;
 
@@ -230,17 +216,17 @@ export default function Page() {
 
       const canvasObjects = storage.get("canvasObjects");
 
-      if (shapeIndex !== undefined && shapeIndex > -1) {
-        shapeData.zIndex = shapeIndex;
-      }
-
       // if z-index already exists, then extract it and set it to the shapeData
       const extractedZindex = canvasObjects.get(objectId)?.zIndex;
 
-      if (extractedZindex !== null && extractedZindex !== undefined) {
+      if (initShape) {
+        const shapeLayer = storage.get("shapeLayer");
+        const shapeLayerIndexCnt = shapeLayer.get("shapeLayerIndexCnt");
+        shapeData.zIndex = shapeLayerIndexCnt;
+        shapeLayer.set("shapeLayerIndexCnt", shapeLayerIndexCnt + 1);
+      } else if (extractedZindex !== null && extractedZindex !== undefined) {
         shapeData.zIndex = extractedZindex;
       }
-
       /**
        * set is a method provided by Liveblocks that allows you to set a value
        *
@@ -329,6 +315,7 @@ export default function Page() {
         selectedShapeRef,
         isDrawing,
         shapeRef,
+        setSelectedShapeId,
       });
     });
 
@@ -512,6 +499,23 @@ export default function Page() {
     });
   }, [canvasObjects]);
 
+  // Added by kyle yap
+
+  const handleLayerClick = (shape: any) => {
+    const shapeRefById: any = fabricRef.current
+      ?.getObjects()
+      .find((obj: any) => {
+        return obj.objectId === shape[1]?.objectId;
+      });
+
+    if (shapeRefById) {
+      activeObjectRef.current = shapeRefById;
+      fabricRef.current?.setActiveObject(shapeRefById);
+      setSelectedShapeId(shapeRefById.objectId);
+      fabricRef.current?.renderAll();
+    }
+  };
+
   return (
     <main className="h-screen overflow-hidden">
       <Navbar
@@ -537,6 +541,7 @@ export default function Page() {
             return a[1].zIndex - b[1].zIndex;
           })}
           handleLayerClick={handleLayerClick}
+          selectedShapeId={selectedShapeId}
         />
 
         <Live canvasRef={canvasRef} undo={undo} redo={redo} />

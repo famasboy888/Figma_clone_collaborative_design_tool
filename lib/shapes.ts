@@ -61,7 +61,7 @@ export const createText = (pointer: PointerEvent, text: string) => {
     fontFamily: "Helvetica",
     fontSize: 36,
     fontWeight: "400",
-    objectId: uuidv4()
+    objectId: uuidv4(),
   } as fabric.ITextOptions);
 };
 
@@ -100,19 +100,20 @@ export const handleImageUpload = ({
 
   reader.onload = () => {
     fabric.Image.fromURL(reader.result as string, (img) => {
+      console.log("Loading image");
       img.scaleToWidth(200);
       img.scaleToHeight(200);
 
       canvas.current.add(img);
+
+      canvas.current.sendToBack(img);
 
       // @ts-ignore
       img.objectId = uuidv4();
 
       shapeRef.current = img;
 
-      const shapeIndex = canvas.current.getObjects().indexOf(img);
-
-      syncShapeInStorage(img, shapeIndex);
+      syncShapeInStorage(img, true);
       canvas.current.requestRenderAll();
     });
   };
@@ -147,7 +148,7 @@ export const modifyShape = ({
   // if  property is width or height, set the scale of the selected element
   if (property === "width") {
     selectedElement.set("scaleX", 1);
-    selectedElement.set("width", value);  
+    selectedElement.set("width", value);
   } else if (property === "height") {
     selectedElement.set("scaleY", 1);
     selectedElement.set("height", value);
@@ -156,14 +157,7 @@ export const modifyShape = ({
     selectedElement.set(property as keyof object, value);
   }
 
-  // set selectedElement to activeObjectRef
-  // activeObjectRef.current = selectedElement;
-
-  // const shapeIndex = canvas.getObjects().indexOf(selectedElement);
-
-  const shapeIndex = 0;
-
-  syncShapeInStorage(selectedElement, shapeIndex);
+  syncShapeInStorage(selectedElement);
 };
 
 export const bringElement = ({
