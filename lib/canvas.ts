@@ -190,7 +190,6 @@ export const handleCanvasMouseUp = ({
   isDrawing.current = false;
   if (selectedShapeRef.current === "freeform") return;
 
-
   syncShapeInStorage(shapeRef.current, true);
 
   // set everything to null
@@ -353,7 +352,7 @@ export const renderCanvas = ({
   // clear canvas
   fabricRef.current?.clear();
 
-  // render all objects on canvas
+  let objectList: fabric.Object[] = [];
 
   //Sort first according to z-index
   const sortedCanvasObjects = new Map(
@@ -362,44 +361,23 @@ export const renderCanvas = ({
     })
   );
 
-  console.log("sortedCanvasObjects", sortedCanvasObjects);
-
-  Array.from(sortedCanvasObjects, ([objectId, objectData]) => {
-    /**
-     * enlivenObjects() is used to render objects on canvas.
-     * It takes two arguments:
-     * 1. objectData: object data to render on canvas
-     * 2. callback: callback function to execute after rendering objects
-     * on canvas
-     *
-     * enlivenObjects: http://fabricjs.com/docs/fabric.util.html#.enlivenObjectEnlivables
-     */
-    fabric.util.enlivenObjects(
-      [objectData],
-      (enlivenedObjects: fabric.Object[]) => {
-        enlivenedObjects.forEach((enlivenedObj) => {
-          // if element is active, keep it in active state so that it can be edited further
-          if (activeObjectRef.current?.objectId === objectId) {
-            fabricRef.current?.setActiveObject(enlivenedObj);
-          }
-
-          console.log("enlivenedObj", enlivenedObj);
-
-          // add object to canvas
-          fabricRef.current?.add(enlivenedObj);
-        });
-      },
-      /**
-       * specify namespace of the object for fabric to render it on canvas
-       * A namespace is a string that is used to identify the type of
-       * object.
-       *
-       * Fabric Namespace: http://fabricjs.com/docs/fabric.html
-       */
-      "fabric"
-    );
+  Array.from(sortedCanvasObjects, (obj: any) => {
+    objectList.push(obj[1]);
   });
 
+  fabric.util.enlivenObjects(
+    objectList,
+    (objects: any) => {
+      objects.forEach(function (obj: any) {
+        if (activeObjectRef.current?.objectId === obj.objectId) {
+          fabricRef.current?.setActiveObject(obj);
+        }
+
+        fabricRef.current?.add(obj);
+      });
+    },
+    "fabric"
+  );
   fabricRef.current?.renderAll();
 };
 
