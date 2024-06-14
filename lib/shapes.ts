@@ -100,13 +100,10 @@ export const handleImageUpload = ({
 
   reader.onload = () => {
     fabric.Image.fromURL(reader.result as string, (img) => {
-      console.log("Loading image");
       img.scaleToWidth(200);
       img.scaleToHeight(200);
 
       canvas.current.add(img);
-
-      canvas.current.sendToBack(img);
 
       // @ts-ignore
       img.objectId = uuidv4();
