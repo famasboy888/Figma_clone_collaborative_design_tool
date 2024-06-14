@@ -3,7 +3,7 @@
 import { ReactNode } from "react";
 import { RoomProvider } from "../liveblocks.config";
 import { ClientSideSuspense } from "@liveblocks/react";
-import { LiveMap } from "@liveblocks/client";
+import { LiveMap, LiveObject } from "@liveblocks/client";
 import Loader from "@/components/Loader";
 
 export function Room({ children }: { children: ReactNode }) {
@@ -17,6 +17,7 @@ export function Room({ children }: { children: ReactNode }) {
       }}
       initialStorage={{
         canvasObjects: new LiveMap(),
+        shapeLayer: new LiveObject({ shapeLayerIndexCnt: 0 }),
       }}
     >
       <ClientSideSuspense fallback={<Loader />}>

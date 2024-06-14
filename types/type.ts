@@ -1,5 +1,6 @@
 import { BaseUserMeta, User } from "@liveblocks/client";
 import { Gradient, Pattern } from "fabric/fabric-impl";
+import { Dispatch, SetStateAction } from "react";
 
 export enum CursorMode {
   Hidden,
@@ -74,7 +75,7 @@ export type ModifyShape = {
   property: string;
   value: any;
   activeObjectRef: React.MutableRefObject<fabric.Object | null>;
-  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
+  syncShapeInStorage: (shape: fabric.Object) => void;
 };
 
 export type ElementDirection = {
@@ -87,7 +88,7 @@ export type ImageUpload = {
   file: File;
   canvas: React.MutableRefObject<fabric.Canvas>;
   shapeRef: React.MutableRefObject<fabric.Object | null>;
-  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
+  syncShapeInStorage: (shape: fabric.Object, initShape: boolean) => void;
 };
 
 export type RightSidebarProps = {
@@ -130,6 +131,7 @@ export type CanvasMouseDown = {
   selectedShapeRef: any;
   isDrawing: React.MutableRefObject<boolean>;
   shapeRef: React.MutableRefObject<any>;
+  setSelectedShapeId: Dispatch<SetStateAction<string | null>>;
 };
 
 export type CanvasMouseMove = {
@@ -138,7 +140,7 @@ export type CanvasMouseMove = {
   isDrawing: React.MutableRefObject<boolean>;
   selectedShapeRef: any;
   shapeRef: React.MutableRefObject<any>;
-  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
+  syncShapeInStorage: (shape: fabric.Object) => void;
 };
 
 export type CanvasMouseUp = {
@@ -147,14 +149,14 @@ export type CanvasMouseUp = {
   shapeRef: any;
   activeObjectRef: React.MutableRefObject<fabric.Object | null | any>;
   selectedShapeRef: any;
-  syncShapeInStorage: (shape: fabric.Object, shapeIndex: number) => void;
+  syncShapeInStorage: (shape: fabric.Object, initShape: boolean) => void;
   setActiveElement: any;
 };
 
 export type CanvasObjectModified = {
   options: fabric.IEvent;
   canvas: fabric.Canvas;
-  syncShapeInStorage: (shape: fabric.Object, shapeIndex: any) => void;
+  syncShapeInStorage: (shape: fabric.Object) => void;
 };
 
 export type CanvasPathCreated = {
